@@ -14,6 +14,27 @@ class Room:
         self.description = description
         self.exits = {}  # Dictionary
 
+        self.items = []
+
+
+    def set_item(self, name):
+
+        self.items.append(name)
+
+    def get_items(self, name):
+        if name in self.items:
+            return True
+        else:
+            return False
+    def print_items(self):
+
+        if len(self.items) == 1:
+            return f'There is an item here: {self.items[0]}'
+        elif len(self.items) > 1:
+            return f'There are some items here: {self.items}'
+        else:
+            return 'This room seems to be all empty'
+
     def set_exit(self, direction, neighbour):
         """
             Adds an exit for a room. The exit is stored as a dictionary

@@ -1,5 +1,7 @@
 from Room import Room
 from TextUI import TextUI
+from Item import Item
+from Player import Player
 
 """
     This class is the main class of the "Adventure World" application. 
@@ -25,9 +27,15 @@ class Game:
         """
         Initialises the game.
         """
+        self.create_player()
         self.create_rooms()
+        self.create_items()
         self.current_room = self.lobby
         self.textUI = TextUI()
+
+    def create_player(self):
+
+        self.player = Player(input("Name your character: "))
 
     def create_rooms(self):
         """
@@ -74,6 +82,15 @@ class Game:
         self.room2a.set_exit("south", self.thefinish)
         self.thefinish.set_exit("north", self.room2a)
 
+    def create_items(self):
+        """
+            Create all item instances
+        :return:
+        """
+
+        self.note = Item('note', 0.1, 'lobby')
+        self.lobby.set_item(self.note.name)
+
 
     def play(self):
         """
@@ -92,7 +109,7 @@ class Game:
             Displays a welcome message.
         :return:
         """
-        self.textUI.print_to_textUI("You are lost. You are alone. You wander")
+        self.textUI.print_to_textUI(f"You are lost {self.player.name}. You are alone. You wander")
         self.textUI.print_to_textUI("around the deserted complex.")
         self.textUI.print_to_textUI("")
         self.textUI.print_to_textUI(f'Your command words are: {self.show_command_words()}')
@@ -102,7 +119,7 @@ class Game:
             Show a list of available commands.
         :return: None
         """
-        return ['help', 'go', 'quit']
+        return ['help', 'go', 'collect', 'quit']
 
     def process_command(self, command):
         """
@@ -119,6 +136,8 @@ class Game:
             self.print_help()
         elif command_word == "GO":
             self.do_go_command(second_word)
+        elif command_word == "COLLECT":
+            self.do_collect_command(second_word)
         elif command_word == "QUIT":
             want_to_quit = True
         else:
@@ -132,7 +151,7 @@ class Game:
             Display some useful help text.
         :return: None
         """
-        self.textUI.print_to_textUI("You are lost. You are alone. You wander")
+        self.textUI.print_to_textUI(f"You are lost {self.player.name}. You are alone. You wander")
         self.textUI.print_to_textUI("around the deserted complex.")
         self.textUI.print_to_textUI("")
         self.textUI.print_to_textUI(f'Your command words are: {self.show_command_words()}.')
@@ -154,6 +173,21 @@ class Game:
         else:
             self.current_room = next_room
             self.textUI.print_to_textUI(self.current_room.get_long_description())
+            self.textUI.print_to_textUI(self.current_room.print_items())
+
+    def do_collect_command(self, second_word):
+
+        if second_word == None:
+            # Missing second word...
+            self.textUI.print_to_textUI("Collect what?")
+            return
+
+        if self.current_room.get_items(second_word) == True:
+            self.player.backpack.append(second_word)
+            self.textUI.print_to_textUI(f"An item added to your inventory: {self.player.get_inventory()}")
+
+        else:
+            self.textUI.print_to_textUI("There is no such item here!")
 
 def main():
     game = Game()
