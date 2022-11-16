@@ -6,7 +6,7 @@
 
 class Room:
 
-    def __init__(self, description):
+    def __init__(self, description, unlocked=True):
         """
             Constructor method.
         :param description: Text description for this room
@@ -14,24 +14,41 @@ class Room:
         self.description = description
         self.exits = {}  # Dictionary
 
-        self.items = []
+        self.unlocked = unlocked
+        self.items = [] #item instances
+        self.item_names = [] #names of the item instances
 
+    def set_item(self, item):
+        self.items.append(item)
+        self.item_names.append(item.name)
+    def get_item(self, second_word):
+        for item in self.items:
+            if second_word == item.name:
+                return item
 
-    def set_item(self, name):
+    def del_item(self, item):
+        self.items.remove(item)
+        self.item_names.remove(item.name)
 
-        self.items.append(name)
+    def remove_item(self, item):
+        for item in self.items:
+            self.items.remove(item)
+            self.item_names.remove(item.name)
 
-    def get_items(self, name):
-        if name in self.items:
+    def check_item(self, name):
+        names = []
+        for item in self.items:
+            names.append(item.name)
+        if name in names:
             return True
         else:
             return False
     def print_items(self):
 
         if len(self.items) == 1:
-            return f'There is an item here: {self.items[0]}'
+            return f'There is an item here: {self.item_names[0]}'
         elif len(self.items) > 1:
-            return f'There are some items here: {self.items}'
+            return f'There are some items here: {self.item_names}'
         else:
             return 'This room seems to be all empty'
 

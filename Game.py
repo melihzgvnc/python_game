@@ -54,8 +54,7 @@ class Game:
         self.room3b = Room("in the room3b")
         self.room3c = Room("in the room3c")
         self.cafe = Room("in the cafe")
-        self.thefinish = Room("in the finish")
-
+        self.thefinish = Room("in the finish", unlocked=False)
 
         self.lobby.set_exit("north", self.room1)
         self.lobby.set_exit("west", self.room2)
@@ -88,9 +87,10 @@ class Game:
         :return:
         """
 
-        self.note = Item('note', 0.1, 'lobby')
-        self.lobby.set_item(self.note.name)
-
+        self.note = Item('note', 1)
+        self.room1.set_item(self.note)
+        self.key = Item('key', 2)
+        self.room3.set_item(self.key)
 
     def play(self):
         """
@@ -119,7 +119,7 @@ class Game:
             Show a list of available commands.
         :return: None
         """
-        return ['help', 'go', 'collect', 'quit']
+        return ['help', 'go', 'collect', 'inventory', 'quit']
 
     def process_command(self, command):
         """
@@ -138,6 +138,10 @@ class Game:
             self.do_go_command(second_word)
         elif command_word == "COLLECT":
             self.do_collect_command(second_word)
+        elif command_word == "INVENTORY":
+            self.do_show_inventory_command()
+        elif command_word == "REMOVE":
+            self.do_remove_command(second_word)
         elif command_word == "QUIT":
             want_to_quit = True
         else:
@@ -171,9 +175,28 @@ class Game:
         if next_room == None:
             self.textUI.print_to_textUI("There is no door!")
         else:
-            self.current_room = next_room
-            self.textUI.print_to_textUI(self.current_room.get_long_description())
-            self.textUI.print_to_textUI(self.current_room.print_items())
+
+            if next_room.unlocked == True:
+                self.current_room = next_room
+                self.textUI.print_to_textUI(self.current_room.get_long_description())
+                self.textUI.print_to_textUI(self.current_room.print_items())
+            else:
+                if self.key in self.player.inventory:
+                    self.textUI.print_to_textUI("You have the key. Unlock it now!")
+                    command, _ = self.textUI.get_command()
+                    if command.upper() == "UNLOCK":
+                        self.do_unlock_command(next_room, self.key)
+                    else:
+                        self.textUI.print_to_textUI("Don't know what you mean!")
+                else:
+                    self.textUI.print_to_textUI("It's locked. You must have the key!")
+    def do_unlock_command(self, next_room, item):
+        next_room.unlocked = True
+        self.current_room = next_room
+        self.player.remove_item(item)
+        self.textUI.print_to_textUI("The door has been opened!")
+        self.textUI.print_to_textUI(self.current_room.get_long_description())
+        self.textUI.print_to_textUI(self.current_room.print_items())
 
     def do_collect_command(self, second_word):
 
@@ -182,13 +205,35 @@ class Game:
             self.textUI.print_to_textUI("Collect what?")
             return
 
-        if self.current_room.get_items(second_word) == True:
-            self.player.backpack.append(second_word)
-            self.textUI.print_to_textUI(f"An item added to your inventory: {self.player.get_inventory()}")
-
+        if self.current_room.check_item(second_word):
+            current_item = self.current_room.get_item(second_word)
+            if self.player.backpack['Weight'] + current_item.weight < 10:
+                self.player.inventory.append(current_item)
+                self.player.backpack['Items'].append(current_item.name)
+                self.player.backpack['Weight'] += current_item.weight
+                self.textUI.print_to_textUI(f"An item added to your inventory: {self.player.get_inventory()}")
+                self.current_room.remove_item(current_item)
+            else:
+                self.textUI.print_to_textUI("The backpack can only carry up to 10kg!")
+                self.textUI.print_to_textUI("Your backpack is full! You cannot add another item.")
         else:
             self.textUI.print_to_textUI("There is no such item here!")
 
+    def do_show_inventory_command(self):
+        if len(self.player.backpack) >= 1:
+            self.textUI.print_to_textUI(f"Your items: {self.player.backpack}")
+        else:
+            self.textUI.print_to_textUI("Your backpack is empty!")
+
+    def do_remove_command(self, second_word):
+        current_item = self.player.get_item(second_word)
+
+        if second_word in self.player.backpack['Items']:
+            self.player.remove_item(current_item)
+            self.textUI.print_to_textUI(f"{current_item.name} is removed. Your backpack's current weight is {self.player.backpack['Weight']}kg.")
+            self.current_room.set_item(current_item)
+        else:
+            self.textUI.print_to_textUI(f"There isn't any {second_word} in your inventory!")
 def main():
     game = Game()
     game.play()

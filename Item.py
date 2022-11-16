@@ -1,6 +1,10 @@
 class Item:
 
-    def __init__(self, name, weight, room):
+    def __init__(self, name, weight):
         self.name = name
         self.weight = weight
-        self.location = room
+
+
+    def get_description(self):
+
+        return {self.name: self.weight}
