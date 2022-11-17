@@ -2,8 +2,12 @@ class Player:
 
     def __init__(self, name):
         self.name = name
+        self.money = 5
         self.backpack = {"Items": [], "Weight": 0}
         self.inventory = []
+
+    def get_money(self):
+        return str(self.money)+"£"
 
     def get_inventory(self):
         return self.backpack
