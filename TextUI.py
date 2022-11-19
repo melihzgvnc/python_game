@@ -7,8 +7,8 @@ class TextUI:
     def __init__(self):
         # Nothing to do...
         pass
-
-    def get_command(self):
+    @staticmethod
+    def get_command():
         """
             Fetches a command from the console.
         :return: a 2-tuple of the form (command_word, second_word)
