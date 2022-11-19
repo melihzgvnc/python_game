@@ -3,6 +3,7 @@ from TextUI import TextUI
 from Item import Item
 from Player import Player
 from Store import Store
+from Backpack import Backpack
 
 """
     This class is the main class of the "Adventure World" application. 
@@ -35,13 +36,13 @@ class Game:
         self.create_items_on_sale()
         self.current_room = self.lobby
         self.textUI = TextUI()
+        self.backpack = Backpack()
 
     def create_items_on_sale(self):
-        self.glass = Item("glass", 6, 0.5)
+        self.glass = Item("glass", 5, 0.5)
         self.store.add_item(self.glass)
 
     def create_player(self):
-
         self.player = Player(input("Name your character: "))
 
     def create_rooms(self):
@@ -93,7 +94,6 @@ class Game:
             Create all item instances
         :return:
         """
-
         self.note = Item('note', 0.5, 1)
         self.room1.set_item(self.note)
         self.key = Item('key', 0.5, 2)
@@ -205,7 +205,6 @@ class Game:
         self.textUI.print_to_textUI(self.current_room.print_items())
 
     def do_collect_command(self, second_word):
-
         if second_word == None:
             # Missing second word...
             self.textUI.print_to_textUI("Collect what?")
@@ -213,22 +212,14 @@ class Game:
 
         if self.current_room.check_item(second_word):
             current_item = self.current_room.get_item(second_word)
-            if self.player.backpack['Weight'] + current_item.weight < 10:
-                self.player.inventory.append(current_item)
-                self.player.backpack['Items'].append(current_item.name)
-                self.player.backpack['Weight'] += current_item.weight
-                self.textUI.print_to_textUI(f"An item added to your inventory: {self.player.get_inventory()}")
-                self.current_room.remove_item(current_item)
-            else:
-                self.textUI.print_to_textUI("The backpack can only carry up to 10kg!")
-                self.textUI.print_to_textUI("Your backpack is full! You cannot add another item.")
+            self.backpack.add_item(current_item, self.current_room)
         else:
             self.textUI.print_to_textUI("There is no such item here!")
 
     def do_show_command(self, second_word):
         if second_word.upper() == "INVENTORY":
-            if len(self.player.backpack) >= 1:
-                self.textUI.print_to_textUI(f"Your items: {self.player.backpack}")
+            if len(self.backpack.inventory) >= 1:
+                self.textUI.print_to_textUI(f"Your items: {self.backpack.get_inventory()}")
             else:
                 self.textUI.print_to_textUI("Your backpack is empty!")
 
@@ -244,19 +235,7 @@ class Game:
                     if item_bought == None:
                         self.textUI.print_to_textUI("Sorry, couldn't find what you want.")
                     else:
-                        if self.player.backpack['Weight'] + item_bought.weight < 10:
-                            if self.player.money >= item_bought.price:
-                                self.store.sell_item(item_bought)
-                                self.player.inventory.append(item_bought)
-                                self.player.backpack['Items'].append(item_bought.name)
-                                self.player.backpack['Weight'] += item_bought.weight
-                                self.player.money -= item_bought.price
-                                self.textUI.print_to_textUI(f"An item added to your inventory: {self.player.get_inventory()}")
-                            else:
-                                self.textUI.print_to_textUI("You do not have enough money to buy this item!")
-                        else:
-                            self.textUI.print_to_textUI("The backpack can only carry up to 10kg!")
-                            self.textUI.print_to_textUI("Your backpack is full! You cannot add another item.")
+                        self.backpack.buy_item(item_bought, self.player, self.store)
                 elif command_word.upper() == "EXIT":
                     self.textUI.print_to_textUI(self.current_room.get_long_description())
                     self.textUI.print_to_textUI(self.current_room.print_items())
@@ -267,11 +246,11 @@ class Game:
             self.textUI.print_to_textUI("You can only show the store or your inventory!")
 
     def do_remove_command(self, second_word):
-        current_item = self.player.get_item(second_word)
+        current_item = self.backpack.get_item(second_word)
 
-        if second_word in self.player.backpack['Items']:
-            self.player.remove_item(current_item)
-            self.textUI.print_to_textUI(f"{current_item.name} is removed. Your backpack's current weight is {self.player.backpack['Weight']}kg.")
+        if second_word in self.backpack.backpack['Items']:
+            self.backpack.remove_item(current_item)
+            self.textUI.print_to_textUI(f"{current_item.name} is removed. Your backpack's current weight is {self.backpack.backpack['Weight']}kg.")
             self.current_room.set_item(current_item)
         else:
             self.textUI.print_to_textUI(f"There isn't any {second_word} in your inventory!")
