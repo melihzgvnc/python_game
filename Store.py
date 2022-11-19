@@ -10,6 +10,7 @@ class Store:
 
     def sell_item(self, item):
         self.on_sale.pop(item.name)
+        self.all_items.remove(item)
 
     def get_item(self, second_word):
         temp = None

@@ -11,11 +11,6 @@ class Backpack:
     def get_inventory(self):
         return self.backpack
 
-    def remove_item(self, item):
-        self.backpack['Items'].remove(item.name)
-        self.backpack['Weight'] -= item.weight
-        self.inventory.remove(item)
-
     def get_item(self, second_word):
         for item in self.inventory:
             if second_word == item.name:
@@ -46,3 +41,8 @@ class Backpack:
         else:
             self.textUI.print_to_textUI(f"The backpack can only carry up to {self.capacity}kg!")
             self.textUI.print_to_textUI("Your backpack is full! You cannot add another item.")
+
+    def remove_item(self, item):
+        self.backpack['Items'].remove(item.name)
+        self.backpack['Weight'] -= item.weight
+        self.inventory.remove(item)

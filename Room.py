@@ -21,6 +21,7 @@ class Room:
     def set_item(self, item):
         self.items.append(item)
         self.item_names.append(item.name)
+
     def get_item(self, second_word):
         for item in self.items:
             if second_word == item.name:
@@ -35,6 +36,7 @@ class Room:
             self.items.remove(item)
             self.item_names.remove(item.name)
 
+    #CHECK THIS FUNCTION OUT
     def check_item(self, name):
         names = []
         for item in self.items:

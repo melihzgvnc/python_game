@@ -187,7 +187,7 @@ class Game:
                 self.textUI.print_to_textUI(self.current_room.get_long_description())
                 self.textUI.print_to_textUI(self.current_room.print_items())
             else:
-                if self.key in self.player.inventory:
+                if self.key in self.backpack.inventory:
                     self.textUI.print_to_textUI("You have the key. Unlock it now!")
                     command, _ = self.textUI.get_command()
                     if command.upper() == "UNLOCK":
@@ -199,7 +199,7 @@ class Game:
     def do_unlock_command(self, next_room, item):
         next_room.unlocked = True
         self.current_room = next_room
-        self.player.remove_item(item)
+        self.backpack.remove_item(item)
         self.textUI.print_to_textUI("The door has been opened!")
         self.textUI.print_to_textUI(self.current_room.get_long_description())
         self.textUI.print_to_textUI(self.current_room.print_items())
