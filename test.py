@@ -33,7 +33,6 @@ class TestTextUI(unittest.TestCase):
 
     def test_textUI(self):
         self.assertIsNone(self.textUI.print_to_textUI("trial"))
-        #self.assertIsNotNone(self.textUI.get_command())
 
 
 class TestStore(unittest.TestCase):
@@ -72,7 +71,7 @@ class TestRoom(unittest.TestCase):
 
         self.assertEqual(self.room.get_item("apple"), self.item)
 
-        self.room.del_item(self.item)
+        self.room.remove_item(self.item)
         self.assertNotIn(self.item, self.room.items)
         self.assertNotIn(self.item.name, self.room.item_names)
 

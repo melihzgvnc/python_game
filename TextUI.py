@@ -2,13 +2,14 @@
     A simple text based User Interface (UI) for the Adventure World game.
 """
 
+
 class TextUI:
 
     def __init__(self):
         # Nothing to do...
         pass
-    @staticmethod
-    def get_command():
+
+    def get_command(self):
         """
             Fetches a command from the console.
         :return: a 2-tuple of the form (command_word, second_word)
@@ -25,7 +26,7 @@ class TextUI:
             else:
                 word2 = None
             # Just ignore any other words
-        return (word1, word2)
+        return word1, word2
 
     def print_to_textUI(self, text):
         """

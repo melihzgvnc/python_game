@@ -1,6 +1,6 @@
 """
     Create a room described "description". Initially, it has
-    no exits. The 'description' is something like 'kitchen' or
+    no exits and is not locked. The 'description' is something like 'kitchen' or
     'an open court yard'.
 """
 
@@ -10,43 +10,81 @@ class Room:
         """
             Constructor method.
         :param description: Text description for this room
+        :param unlocked: True by default, False if room is needed to be locked
+        :return: None
         """
         self.description = description
         self.exits = {}  # Dictionary
-
         self.unlocked = unlocked
         self.items = [] #item instances
         self.item_names = [] #names of the item instances
+        self.notice = None
+
+    def set_notice(self, hint):
+        """
+            Sets up a notice.
+
+        :param hint: a clue the notice contains
+        :return: None
+        """
+        self.notice = hint
+
+    def get_notice(self):
+        """
+            Gets a notice if exists.
+        :return: Notice, a message if not exists
+        """
+        if self.notice == None:
+            return "Nothing to read here!"
+        else:
+            return self.notice
 
     def set_item(self, item):
+        """
+            Put a given item into a room
+        :param item: an item instance of Item class
+        :return: None
+        """
         self.items.append(item)
         self.item_names.append(item.name)
 
     def get_item(self, second_word):
+        """
+            Fetch an item.
+        :param second_word: the name of an item
+        :return: Item if exists, otherwise None
+        """
         for item in self.items:
             if second_word == item.name:
                 return item
 
-    def del_item(self, item):
-        self.items.remove(item)
-        self.item_names.remove(item.name)
 
     def remove_item(self, item):
+        """
+            Delete an item.
+        :param item: an item instance of Item class
+        :return: None
+        """
         for item in self.items:
             self.items.remove(item)
             self.item_names.remove(item.name)
 
-    #CHECK THIS FUNCTION OUT
     def check_item(self, name):
-        names = []
-        for item in self.items:
-            names.append(item.name)
-        if name in names:
+        """
+            Check the existence of an item by its name given.
+        :param name: the name of an item
+        :return: True if exists, False otherwise
+        """
+        if name in self.item_names:
             return True
         else:
             return False
-    def print_items(self):
 
+    def print_items(self):
+        """
+            Print item(s) in a room.
+        :return: Text of items if exists, or a text telling no item in the room
+        """
         if len(self.items) == 1:
             return f'There is an item here: {self.item_names[0]}'
         elif len(self.items) > 1:
