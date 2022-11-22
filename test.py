@@ -11,9 +11,11 @@ class TestPlayer(unittest.TestCase):
 
     def setUp(self):
         self.player = Player()
+        self.textUI = TextUI()
 
     def test_player(self):
-        self.assertEqual(self.player.get_money(), str(self.player.money)+"£")
+        test = self.player.get_money()
+        self.assertEqual(test, f"Your money: {str(self.money)}£")
 
 
 class TestItem(unittest.TestCase):
@@ -108,15 +110,12 @@ class TestBackpack(unittest.TestCase):
 
         self.backpack.add_item(self.item, self.room)
         self.assertIn(self.item, self.backpack.inventory)
-        self.assertIn(self.item.name, self.backpack.backpack["Items"])
 
         self.backpack.buy_item(self.item_bought, self.player, self.store)
         self.assertIn(self.item_bought, self.backpack.inventory)
-        self.assertIn(self.item_bought.name, self.backpack.backpack["Items"])
 
         self.backpack.remove_item(self.item)
         self.assertNotIn(self.item, self.backpack.inventory)
-        self.assertNotIn(self.item.name, self.backpack.backpack["Items"])
 
 
 if __name__ == '__main__':
