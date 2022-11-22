@@ -15,7 +15,7 @@ class TestPlayer(unittest.TestCase):
 
     def test_player(self):
         test = self.player.get_money()
-        self.assertEqual(test, f"Your money: {str(self.money)}£")
+        self.assertEqual(test, self.textUI.print_to_textUI(f"Your money: {str(self.player.money)}£"))
 
 
 class TestItem(unittest.TestCase):
