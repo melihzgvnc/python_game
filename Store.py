@@ -32,7 +32,7 @@ class Store:
         """
             Fetch an item.
         :param second_word: the name of an item
-        :return: None if item does not exists, item otherwise
+        :return: None if item does not exist, item otherwise
         """
         temp = None
         for item in self.all_items:

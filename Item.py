@@ -4,7 +4,7 @@
 """
 class Item:
 
-    def __init__(self, name, weight, price=0.1):
+    def __init__(self, name, weight, price=1):
         """
             Initialise an item.
         :param name: name of the item

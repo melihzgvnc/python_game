@@ -1,7 +1,6 @@
 """
     Create a room described "description". Initially, it has
-    no exits and is not locked. The 'description' is something like 'kitchen' or
-    'an open court yard'.
+    no exits and is not locked.
 """
 
 class Room:
@@ -14,7 +13,7 @@ class Room:
         :return: None
         """
         self.description = description
-        self.exits = {}  # Dictionary
+        self.exits = {}  # Dictionary (direction: room)
         self.unlocked = unlocked
         self.items = [] #item instances
         self.item_names = [] #names of the item instances
@@ -73,7 +72,7 @@ class Room:
         """
             Check the existence of an item by its name given.
         :param name: the name of an item
-        :return: True if exists, False otherwise
+        :return: True if item exists, False otherwise
         """
         if name in self.item_names:
             return True

@@ -4,6 +4,7 @@ from TextUI import TextUI
     Create a player with a name given.
     If a name is not provided, names it 'noname' by default.
 """
+
 class Player:
 
     def __init__(self, name="noname"):
@@ -21,4 +22,3 @@ class Player:
         :return: None
         """
         self.textUI.print_to_textUI(f"Your money: {str(self.money)}£")
-

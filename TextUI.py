@@ -1,8 +1,6 @@
 """
-    A simple text based User Interface (UI) for the Adventure World game.
+    A simple text based User Interface (UI).
 """
-
-
 class TextUI:
 
     def __init__(self):

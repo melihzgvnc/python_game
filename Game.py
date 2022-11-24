@@ -6,21 +6,14 @@ from Store import Store
 from Backpack import Backpack
 
 """
-    This class is the main class of the "Adventure World" application. 
-    'Adventure World' is a very simple, text based adventure game. Users 
-    can walk around some scenery. That's all. It should really be extended 
-    to make it more interesting!
+    This class is the main class of the "Trapped" application. 
+    'Trapped' is a very simple, text based escape game. Users 
+    should travel through some rooms and seek a way out.
     
     To play this game, create an instance of this class and call the "play"
     method.
     
-    This main class creates and initialises all the others: it creates all
-    rooms, creates the parser and starts the game. It also evaluates and
-    executes the commands that the parser returns.
-    
-    This game is adapted from the 'World of Zuul' by Michael Kolling
-    and David J. Barnes. The original was written in Java and has been
-    simplified and converted to Python by Kingsley Sage.
+    This main class creates all features and starts the game. 
 """
 
 class Game:
@@ -51,8 +44,8 @@ class Game:
             Create the player instance.
         :return: None
         """
+        #Checking whether the name given as input is in accordance with the desired format
         try:
-            #self.player = Player(input("Name your character: "))
             name = input("Name your character: ")
             if name.isidentifier() == False:
                 raise Exception()
@@ -66,7 +59,7 @@ class Game:
             Sets up all room assets.
         :return: None
         """
-
+        #Creating the rooms
         self.entrance = Room("in the Entrance")
         self.subterr_chamber = Room("in the Subterranean Chamber")
         self.kings_chamber = Room("in the King's Chamber")
@@ -80,6 +73,7 @@ class Game:
         self.sarcophagus = Room("in the Sarcophagus")
         self.exit = Room("in the Exit", unlocked=False)
 
+        #Connecting the rooms with each other
         self.entrance.set_exit("north", self.subterr_chamber)
         self.entrance.set_exit("west", self.kings_chamber)
         self.entrance.set_exit("south", self.grand_gallery)
@@ -117,7 +111,7 @@ class Game:
             Set up notices and place them into rooms
         :return: None
         """
-        self.subterr_chamber.set_notice("I saw something shining upstairs. It seemed valuable!")
+        self.grand_gallery.set_notice("I saw something shining upstairs. It seemed valuable!")
 
     def play(self):
         """
@@ -144,8 +138,10 @@ class Game:
             Displays a welcome message.
         :return: None
         """
-        self.textUI.print_to_textUI("You are lost. You are alone. You wander")
-        self.textUI.print_to_textUI("around the deserted complex.")
+        self.textUI.print_to_textUI("You, a researcher in the ancient studies, have entered into one of the greatest pyramids to gather data for your research.")
+        self.textUI.print_to_textUI("But something's wrong. The entrance door just disappeared.")
+        self.textUI.print_to_textUI("You are all alone and trapped in this magnificent pyramid.")
+        self.textUI.print_to_textUI("And an eerie feeling starts coming up. You need to find a way out!")
         self.textUI.print_to_textUI("")
         self.textUI.print_to_textUI(f'Your command words are: {self.show_command_words()}')
 
@@ -192,8 +188,8 @@ class Game:
             Display some useful help text.
         :return: None
         """
-        self.textUI.print_to_textUI(f"You are lost {self.player.name}. You are alone. You wander")
-        self.textUI.print_to_textUI("around the deserted complex.")
+        self.textUI.print_to_textUI(f"You seem confused {self.player.name}.")
+        self.textUI.print_to_textUI("Here are some words you may find useful.")
         self.textUI.print_to_textUI("")
         self.textUI.print_to_textUI(f'Your command words are: {self.show_command_words()}.')
 
@@ -202,7 +198,19 @@ class Game:
             Display a congratulation message for the player who have completed the game.
         :return: None
         """
-        self.textUI.print_to_textUI("congratssss")
+        self.textUI.print_to_textUI(f"Congratulations {self.player.name}!!!")
+        self.textUI.print_to_textUI("The hell of a journey it was.")
+        self.textUI.print_to_textUI("Take a deep breath, head home and never come back to this place.")
+
+    def print_notice(self):
+        """
+            Prints the message indicating the existence of a notice if exists.
+        :return: None
+        """
+        if self.current_room.notice != None:
+            self.textUI.print_to_textUI("A notice! Should belong to somebody who came here before.\n"
+                                        "I am wondering if they managed to go out. "
+                                        "Anyway, it might be helpful if I read.")
 
     def do_go_command(self, second_word):
         """
@@ -219,14 +227,15 @@ class Game:
         if next_room == None:
             self.textUI.print_to_textUI("There is no door!")
         else:
+            #if unlocked, the player can go to the next room
             if next_room.unlocked == True:
                 self.current_room = next_room
                 self.textUI.print_to_textUI(self.current_room.get_long_description())
                 self.textUI.print_to_textUI(self.current_room.print_items())
-                if self.current_room.notice != None:
-                    self.textUI.print_to_textUI("A notice! It might be helpful if you read.")
-
+                self.print_notice()
             else:
+                #if locked, the player must have the key and enter the 'unlock' command
+                #otherwise, the player stay where they currently are
                 if self.key in self.backpack.inventory:
                     self.textUI.print_to_textUI("You have the key. Unlock it now!")
                     command, _ = self.textUI.get_command()
@@ -250,8 +259,7 @@ class Game:
         self.textUI.print_to_textUI("The door has been opened!")
         self.textUI.print_to_textUI(self.current_room.get_long_description())
         self.textUI.print_to_textUI(self.current_room.print_items())
-        if self.current_room.notice != None:
-            self.textUI.print_to_textUI("A notice! It might be helpful if you read.")
+        self.print_notice()
 
     def do_read_command(self, current_room):
         """
@@ -295,22 +303,25 @@ class Game:
 
         elif second_word.upper() == 'STORE':
             command_word = ""
+            #The store stays opened until the player inputs the 'exit' command
             while command_word.upper() != "EXIT":
                 self.textUI.print_to_textUI(f"Items on sale: {self.store.get_items()}")
-                self.textUI.print_to_textUI(f"You have {self.player.get_money()}")
+                self.player.get_money()
                 self.textUI.print_to_textUI("Is there anything you want to buy or sell? If no, you can exit.")
                 command_word, second_word = self.textUI.get_command()
                 if command_word.upper() == "BUY":
                     self.do_buy_command(second_word)
+                elif command_word.upper() == "SELL":
+                    self.do_sell_command(second_word)
                 elif command_word.upper() == "EXIT":
                     self.textUI.print_to_textUI(self.current_room.get_long_description())
                     self.textUI.print_to_textUI(self.current_room.print_items())
-                elif command_word.upper() == "SELL":
-                    self.do_sell_item(second_word)
                 else:
+                    #Unknown command
                     self.textUI.print_to_textUI("Don't know what you mean!")
                     self.textUI.print_to_textUI("You can buy or sell an item.")
         else:
+            #Unknown command
             self.textUI.print_to_textUI("You can show the store, your money or your inventory!")
 
     def do_buy_command(self, second_word):
@@ -321,6 +332,7 @@ class Game:
         """
         item_bought = self.store.get_item(second_word)
         if item_bought == None:
+            #Non-existent item
             self.textUI.print_to_textUI("Sorry, couldn't find what you want.")
         else:
             self.backpack.buy_item(item_bought, self.player, self.store)
@@ -339,9 +351,10 @@ class Game:
             self.textUI.print_to_textUI(f"{current_item.name} is removed. Your backpack's current weight is {self.backpack.backpack['Weight']}kg.")
             self.current_room.set_item(current_item)
         else:
+            #Non-existent item
             self.textUI.print_to_textUI(f"There isn't any {second_word} in your inventory!")
 
-    def do_sell_item(self, second_word):
+    def do_sell_command(self, second_word):
         """
             Sell an item given.
         :param second_word: the name of item
@@ -352,6 +365,9 @@ class Game:
             self.store.add_item(item)
             self.backpack.remove_item(item)
             self.player.money += item.price
+        else:
+            #Non-existent item
+            self.textUI.print_to_textUI(f"There isn't any {second_word} in your inventory!")
 
 def main():
     game = Game()

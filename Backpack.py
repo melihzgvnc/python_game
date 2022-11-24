@@ -40,12 +40,14 @@ class Backpack:
         :return: None
         """
         if self.backpack["Weight"] + item.weight < self.capacity:
+            #Add the item into the inventory if it does not outweigh the capacity
             self.inventory.append(item)
             self.backpack['Items'].append({"Name": item.name, "Price": item.price})
             self.backpack['Weight'] += item.weight
             self.textUI.print_to_textUI(f"An item added to your inventory: {self.get_inventory()}")
             room.remove_item(item)
         else:
+            #If the capacity is exceeded, the item will not be added
             self.textUI.print_to_textUI(f"The backpack can only carry up to {self.capacity}kg!")
             self.textUI.print_to_textUI("Your backpack is full! You cannot add another item.")
 
@@ -59,15 +61,18 @@ class Backpack:
         """
         if self.backpack["Weight"] + item.weight < self.capacity:
             if player.money >= item.price:
+                #But the item if the player has enough capacity and money
                 store.sell_item(item)
                 self.inventory.append(item)
-                self.backpack['Items'].append(item.name)
+                self.backpack['Items'].append({"Name": item.name, "Price": item.price})
                 self.backpack['Weight'] += item.weight
                 player.money -= item.price
                 self.textUI.print_to_textUI(f"An item added to your inventory: {self.get_inventory()}")
             else:
+                #Do not buy, if the money is not enough
                 self.textUI.print_to_textUI("You do not have enough money to buy this item!")
         else:
+            #Do not buy, if the current capacity is not enough
             self.textUI.print_to_textUI(f"The backpack can only carry up to {self.capacity}kg!")
             self.textUI.print_to_textUI("Your backpack is full! You cannot add another item.")
 
